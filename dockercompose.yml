@@ -1,0 +1,32 @@
+
+version: '3'
+
+services:
+
+  gunicorn:
+      build: .
+      container_name: 'gunicorn'
+      restart: always
+      command: /bin/sh -c "python3 -m gunicorn -b 0.0.0.0:80 postblog.wsgi --reload"
+      volumes:
+        - .:/app
+      ports:
+        - 80:80
+      environment:
+        - DJANGO_SUPERUSER_USERNAME=admin
+        - DJANGO_SUPERUSER_PASSWORD=admin
+        - DJANGO_SUPERUSER_EMAIL=admin@example.com
+      depends_on:
+        - pgdb
+  pgdb:
+    image: postgres
+    environment:
+      - POSTGRES_DB=postgres
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+    container_name: pgdb
+    volumes:
+      - pgdbdata:/var/lib/postgresql/data/
+
+volumes:
+  pgdbdata: null
