@@ -1,14 +1,11 @@
+from django.contrib.auth.models import User
 from django.db import models
 
+
 class Post(models.Model):
-    title = models.CharField(max_length=450) #заголовок поста
-    author = models.ForeignKey(
-        'auth.User', #автор поста, которого выбираем мы в административной панели управления
-        on_delete=models.CASCADE, #удаление поста
-    )
-    body = models.TextField() #поле (тело) поста
+    title = models.CharField(max_length=255)
+    author = models.ForeignKey(User, on_delete=models.CASCADE, related_name='posts')
+    body = models.TextField(null=True, blank=True)
 
-    #метод - возвращение заголовка поста в виде строки
-    def _str_(self):
-        return self.title
-
+    def __str__(self):
+        return f'{self.title} {self.author.username}'

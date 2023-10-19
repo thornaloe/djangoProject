@@ -1,3 +1,10 @@
 from django.contrib import admin
-from .models import Post
-admin.site.register(Post) #регистрация модели нашего поста
+from blogs.models import Post
+
+
+@admin.register(Post)
+class PostAdmin(admin.ModelAdmin):
+    list_display = ['id', 'title', 'author']
+    search_fields = ['title']
+    list_select_related = ['author']
+

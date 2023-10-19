@@ -1,18 +1,19 @@
-from django.views.generic import ListView, DetailView, TemplateView
-from .models import Post
 
-#создаем модель, кот будет отвечать за домашную страницу
-class Bloglist(ListView):
-    model = Post
-    template_name = 'home.html'
+from django.core.paginator import Paginator
+from django.http import HttpResponseRedirect
+from django.shortcuts import render, resolve_url
 
-#создаем модель, кот будет отвечать за деталь поста
-class BlogDetailView(DetailView):
-    model = Post
-    template_name = 'post_detail.html'
-
-class AboutPageView(TemplateView):
-    template_name = 'post_detail.html'
+from blogs.models import Post
 
 
+def blog_view(request, page=1):
+    if request.method == 'GET' and request.user.is_authenticated:
+        posts = Post.objects.all().select_related('author').order_by('title')
+        paginator = Paginator(posts, per_page=1)
+        page_object = paginator.get_page(page)
+        context = {"page_obj": page_object}
+        return render(request, 'blogs/main.html', context)
+    else:
+        resolved_url = resolve_url('/login/')
+        return HttpResponseRedirect(resolved_url)
 
